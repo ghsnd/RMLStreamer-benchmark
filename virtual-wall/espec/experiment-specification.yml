@@ -1,0 +1,31 @@
+version: 1.0-basic
+rspec: kube.rspec
+upload:
+  - meta: manifest.xml
+  - generated: keypair
+  - generated:
+      method: random
+      format: alphanum
+      length: 6
+    path: token-part1.txt
+    nodes: [node1,node2,node3,node4,node5,node6,master]
+  - generated:
+      method: random
+      format: alphanum
+      length: 16
+    path: token-part2.txt
+    nodes: [node1,node2,node3,node4,node5,node6,master]
+  - bundled: kube-flannel.yml
+    nodes: master
+execute:
+  - bundled: setup_ipv4.sh
+    sudo: true
+  - bundled: setup_kubernetes_common.sh
+    sudo: true
+    nodes: [node1,node2,node3,node4,node5,node6,master]
+  - bundled: setup_kubernetes_master.sh
+    nodes: master
+    sudo: true
+  - bundled: setup_kubernetes_node.sh
+    nodes: [node1,node2,node3,node4,node5,node6]
+    sudo: true

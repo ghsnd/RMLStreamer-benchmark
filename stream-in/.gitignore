@@ -1,0 +1,9 @@
+/.idea
+/in.csv
+data.csv
+tweets.txt
+/.env
+js/package-lock.json
+rust/Cargo.lock
+rust/target/
+js/node_modules/

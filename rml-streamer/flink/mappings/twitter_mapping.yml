@@ -1,0 +1,41 @@
+prefixes:
+  tweet: http://example.org/tweet/
+  emit: http://example.org/emit/
+  prov-said: http://semweb.datasciencelab.be/ns/prov-said/
+  ov: http://open.vocab.org/terms/
+  tsioc: http://rdfs.org/sioc/types#
+  fabio: http://purl.org/spar/fabio/
+
+base: http://example.com/base#
+
+sources:
+  api:
+    access: data.json
+    referenceFormulation: jsonpath
+    iterator: "$"
+
+mappings:
+  tweet:
+    sources: api
+    s: tweet:$(id_str)
+    po:
+      - [a, [prov:Entity, ov:MicroblogPost, schema:SocialMediaPosting, tsioc:MicroblogPost, fabio:Tweet]]
+      - [[prov:label, schema:articleBody], $(text)]
+      - [schema:mainEntityOfPage, https://twitter.com/$(user.screen_name), schema:URL]
+      - [prov:wasAttributedTo, https://twitter.com/$(user.screen_name)]
+      - p: prov:wasGeneratedBy
+        o:
+          mapping: emit
+          condition:
+            function: equal
+            parameters:
+              - [str1, $(id_str)]
+              - [str2, $(id_str)]
+  emit:
+    sources: api
+    s: emit:$(id_str)
+    po:
+      - [a, prov:Activity]
+      - [prov:type, prov-said:EmitMessage~iri]
+      - [prov:wasStartedBy, https://twitter.com/$(user.screen_name)]
+      - [[prov:startedAtTime, prov:endedAtTime], $(created_at)]

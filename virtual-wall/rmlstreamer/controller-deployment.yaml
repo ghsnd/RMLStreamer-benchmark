@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    app: controller
+  name: controller
+spec:
+  template:
+    metadata:
+      labels:
+        app: controller
+    spec:
+      restartPolicy: Never
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: controller
+          image: gitlab.ilabt.imec.be:4567/rml/benchmark/triplewave-docker/controller
+          env:
+            - name: JOB_MANAGER_URL
+              value: http://jobmanager:8081      
+            - name: RMLSTREAMER_URL
+              value: https://cloud.ilabt.imec.be/index.php/s/CkZAikeq2TpzsjY/download?path=RMLStreamer-2.0.0-SNAPSHOT.jar      
+            - name: SOCKET
+              value: stream-out:9999
+            - name: PARALLELISM
+              value: "{{PARALLELISM}}"
+            - name: JOBNAME
+              value: {{JOBNAME}}  
+            - name: MAPPING_FILE
+              value: {{MAPPING_FILE}}

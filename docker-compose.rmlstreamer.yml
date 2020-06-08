@@ -1,0 +1,71 @@
+version: "3.3"
+services:
+  stream-out:
+    environment:
+      - SCRIPT=/processOutputRMLStreamer.js
+      - SOCKET=9999
+      - MEASUREMENTS_FILE=/out.csv
+      - TRIPLES_FILE=triples.nt
+      - NEXTCLOUD_URL=https://cloud.ilabt.imec.be/remote.php/webdav/
+      - NEXTCLOUD_USERNAME # Supply these in .env
+      - NEXTCLOUD_PASSWORD
+      - NEXTCLOUD_DIRECTORY # supply in run script
+    ports:
+      - "9999:9999"
+    build: ./stream-out
+    command: /bin/bash -c "./run.sh"
+    depends_on:
+      - stream-in
+    networks:
+      - benchmark
+
+
+  jobmanager:  
+    build: ./rml-streamer/flink
+    expose:
+      - "6123"
+    ports:
+      - "8081:8081"
+    command: jobmanager
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=jobmanager
+    depends_on:
+      - stream-in
+    networks:
+      - benchmark
+
+
+  taskmanager:
+    build: ./rml-streamer/flink
+    expose:
+      - "6121"
+      - "6122"
+    depends_on:
+      - jobmanager
+    command: taskmanager
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=jobmanager
+      - TASK_MANAGER_NUMBER_OF_TASK_SLOTS # supply in run script
+    networks:
+      - benchmark
+
+
+  # deploys an RMLStreamer jar on the Job Manager
+  controller:
+    build: ./rml-streamer/controller
+    depends_on:
+      - taskmanager
+    environment:
+      - JOB_MANAGER_URL=http://jobmanager:8081
+      - RMLSTREAMER_URL=https://cloud.ilabt.imec.be/index.php/s/CkZAikeq2TpzsjY/download?path=RMLStreamer-2.0.0-SNAPSHOT.jar
+      - MAPPING_FILE # supply in run script
+      # The the socket where the RMLStreamer will write its output to. The host should be the container processing the output.
+      - SOCKET=stream-out:9999
+      - PARALLELISM  # supply in run script
+      - JOBNAME      # supply in run script
+    networks:
+      - benchmark
+
+
+networks:
+  benchmark:

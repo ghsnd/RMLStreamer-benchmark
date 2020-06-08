@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: stream-in
+  name: stream-in
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stream-in
+  template:
+    metadata:
+      labels:
+        app: stream-in
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+      - env:
+        - name: DELAY
+          value: "{{DELAY}}"
+        - name: NEXTCLOUD_DIRECTORY
+          value: {{NEXTCLOUD_DIRECTORY}}
+        - name: NEXTCLOUD_INPUT_FILE
+          value: {{NEXTCLOUD_INPUT_FILE}}
+        - name: NEXTCLOUD_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud
+              key: password
+        - name: NEXTCLOUD_URL
+          value: https://cloud.ilabt.imec.be/remote.php/webdav
+        - name: NEXTCLOUD_USERNAME
+          value: {{NEXTCLOUD_USERNAME}}
+        - name: OUTPUT_FILE
+          value: /in.csv
+        - name: PORT
+          value: "5005"
+        - name: SUFFIX
+          value: id_str
+        - name: DURATION
+          value: "{{DURATION}}"
+        image: gitlab.ilabt.imec.be:4567/rml/benchmark/triplewave-docker/stream-in
+        name: stream-in

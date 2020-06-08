@@ -1,0 +1,46 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: stream-out
+  name: stream-out
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stream-out
+  template:
+    metadata:
+      labels:
+        app: stream-out
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: stream-out
+          args:
+            - /bin/bash
+            - -c
+            - ./run.sh
+          env:
+            - name: SCRIPT
+              value: /processOutputRMLStreamer.js
+            - name: SOCKET
+              value: "9999"
+            - name: MEASUREMENTS_FILE
+              value: /out.csv
+            - name: TRIPLES_FILE
+              value: triples.nt
+            - name: NEXTCLOUD_URL
+              value: https://cloud.ilabt.imec.be/remote.php/webdav/
+            - name: NEXTCLOUD_USERNAME
+              value: {{NEXTCLOUD_USERNAME}}
+            - name: NEXTCLOUD_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud
+                  key: password
+            - name: NEXTCLOUD_DIRECTORY
+              value: {{NEXTCLOUD_DIRECTORY}}      
+          image: gitlab.ilabt.imec.be:4567/rml/benchmark/triplewave-docker/stream-out
+              

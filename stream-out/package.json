@@ -1,0 +1,17 @@
+{
+  "name": "stream-scripts",
+  "version": "0.0.1",
+  "description": "Streaming scripts for distributed RDF streaming",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Pieter Heyvaert & Dylan Van Assche",
+  "license": "MIT",
+  "dependencies": {
+    "csv-parse": "^4.8.8",
+    "json-socket": "^0.3.0",
+    "line-by-line": "^0.1.6",
+    "nextcloud-node-client": "^1.1.6",
+    "ws": "^7.2.1"
+  }
+}

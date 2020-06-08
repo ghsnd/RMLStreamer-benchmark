@@ -1,0 +1,13 @@
+{
+  "name": "stream-scripts",
+  "version": "0.0.1",
+  "description": "Streaming scripts for distributed RDF streaming",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Pieter Heyvaert & Dylan Van Assche",
+  "license": "MIT",
+  "dependencies": {
+    "csv-parse": "^4.8.8"
+  }
+}

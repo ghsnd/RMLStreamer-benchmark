@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: jobmanager
+  name: jobmanager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jobmanager
+  template:
+    metadata:
+      labels:
+        app: jobmanager
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: jobmanager
+          image: gitlab.ilabt.imec.be:4567/rml/benchmark/triplewave-docker/flink
+          args:
+            - jobmanager
+          env:
+            - name: JOB_MANAGER_RPC_ADDRESS
+              value: jobmanager      

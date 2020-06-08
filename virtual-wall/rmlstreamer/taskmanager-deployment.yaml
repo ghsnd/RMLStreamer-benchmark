@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: taskmanager
+  name: taskmanager
+spec:
+  replicas: {{REPLICAS}}
+  selector:
+    matchLabels:
+      app: taskmanager
+  template:
+    metadata:
+      labels:
+        app: taskmanager
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: taskmanager
+          image: gitlab.ilabt.imec.be:4567/rml/benchmark/triplewave-docker/flink
+          args:
+            - taskmanager
+          env:
+            - name: JOB_MANAGER_RPC_ADDRESS
+              value: jobmanager      
+            - name: TASK_MANAGER_NUMBER_OF_TASK_SLOTS
+              value: "{{TASK_MANAGER_NUMBER_OF_TASK_SLOTS}}"
+              
+      
